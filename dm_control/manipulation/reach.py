@@ -51,21 +51,21 @@ _DUPLO_WORKSPACE = _ReachWorkspace(
 
 # Fixing the target for single-goal reach
 # X:Left/Right+   Y:Up/Down   Z:Forward/Backward
-# _SITE_WORKSPACE = _ReachWorkspace(
-#     target_bbox=workspaces.BoundingBox(
-#         lower=(0.23, 0.12, 0.02),
-#         upper=(0.25, 0.15, 0.05)),
-#     tcp_bbox=workspaces.BoundingBox(
-#         lower=(0.1, 0.1, 0.02),
-#         upper=(0.1, 0.1, 0.02)),
-#     arm_offset=robots.ARM_OFFSET)
-
 _SITE_WORKSPACE = _ReachWorkspace(
-    target_bbox=workspaces.BoundingBox(lower=(-0.2, -0.2, 0.02),
-                                       upper=(0.2, 0.2, 0.4)),
-    tcp_bbox=workspaces.BoundingBox(lower=(-0.2, -0.2, 0.02),
-                                    upper=(0.2, 0.2, 0.4)),
+    target_bbox=workspaces.BoundingBox(
+        lower=(0.23, 0.12, 0.02),
+        upper=(0.25, 0.15, 0.05)),
+    tcp_bbox=workspaces.BoundingBox(
+        lower=(0.1, 0.1, 0.02),
+        upper=(0.1, 0.1, 0.02)),
     arm_offset=robots.ARM_OFFSET)
+
+# _SITE_WORKSPACE = _ReachWorkspace(
+#     target_bbox=workspaces.BoundingBox(lower=(-0.2, -0.2, 0.02),
+#                                        upper=(0.2, 0.2, 0.4)),
+#     tcp_bbox=workspaces.BoundingBox(lower=(-0.2, -0.2, 0.02),
+#                                     upper=(0.2, 0.2, 0.4)),
+#     arm_offset=robots.ARM_OFFSET)
 
 _TARGET_RADIUS = 0.05
 
@@ -101,7 +101,7 @@ class Reach(composer.Task):
 
         # Add custom camera observable.
         self._task_observables = cameras.add_camera_observables(
-            arena, obs_settings, cameras.FRONT_CLOSE)
+            arena, obs_settings, cameras.FRONT_FAR)
 
         target_pos_distribution = distributions.Uniform(*workspace.target_bbox)
         self._prop = prop
