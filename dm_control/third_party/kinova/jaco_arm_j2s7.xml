@@ -1,0 +1,128 @@
+<mujoco model="jaco 7dof arm">
+<compiler angle="radian" meshdir="meshes_decimated/"/>
+
+<size njmax="800" nconmax="300"/>
+<!--
+higher values of njmax and nconmax help instabilities but make sim slower
+<size njmax="8000" nconmax="4000"/>
+-->
+<include file="common.xml"/>
+<asset>
+    <mesh name="base" file="base.stl" />
+    <mesh name="shoulder" file="shoulder.stl" />
+    <mesh name="arm_half_1" file="arm_half_1.stl" />
+    <mesh name="arm_half_2" file="arm_half_2.stl" />
+    <mesh name="forearm" file="forearm.stl" />
+    <mesh name="wrist_spherical_1" file="wrist_spherical_1.stl" />
+    <mesh name="wrist_spherical_2" file="wrist_spherical_2.stl" />
+  </asset>
+
+<default>
+    <geom type="mesh" material="dark_gray" condim="3" contype="3" conaffinity="2"/>
+    <joint type="hinge"/>
+    <default class="large_joint">
+      <joint frictionloss="2"/>
+    </default>
+    
+    <default class="small_joint">
+      <joint frictionloss="1"/>
+    </default>
+    
+    <default class="ring">
+        <geom type="cylinder" material="light_gray" mass="0"/>
+        <default class="large_ring">
+            <geom size="0.044 0.011"/>
+        </default>
+        <default class="small_ring">
+            <geom size="0.035 0.009"/>
+        </default>
+    </default>
+</default>
+
+<worldbody>
+<!-- from kinova docs for 7dof 
+Damping_Joint1=3.95 Nm/(rad/s)
+Damping_Joint2=9.2 Nm/(rad/s)
+Damping_Joint3=3.95 Nm/(rad/s)
+Damping_Joint4=3.95 Nm/(rad/s)
+Damping_Joint5=0.5 Nm/(rad/s)
+Damping_Joint6=0.5 Nm/(rad/s)
+Damping_Joint7=0.5 Nm/(rad/s)
+
+Inertia_Joint1=0.711 Nm/(rad/s2)
+Inertia_Joint2=1.656 Nm/(rad/s2)
+Inertia_Joint3=0.711 Nm/(rad/s2)
+Inertia_Joint4=0.711 Nm/(rad/s2)
+Inertia_Joint5=0.09 Nm/(rad/s2)
+Inertia_Joint6=0.21 Nm/(rad/s^2)
+Inertia_Joint7=0.21 Nm/(rad/s2)
+-->
+
+<!-- robot -->
+ <body name="b_base">
+    <geom name='base' type="mesh" pos="0 0 0" euler="0 0 6.2831" rgba="0.17 0.17 0.17 1" mesh="base" mass="0.718306" />
+    <body name="b_1" pos="0 0 0.15675" quat="0 0 1 0">
+       <inertial pos="0 -0.002 -0.0605" mass="0.7477" diaginertia="0.00152032 0.00152032 0.00059816" />
+       <joint name="joint_1" pos="0 0 0" axis="0 0 1" class="large_joint" damping="3.95" armature="0.711" limited="false"/>
+       <geom name="link_1" type="mesh" rgba="0.17 0.17 0.17 1" mesh="shoulder" />
+         <geom name="ring_1" class="large_ring" mass="1e-9"/>
+
+     <body name="b_2"  pos="0 0.0016 -0.11875" quat="0 0 -0.707107 0.707107">
+       <inertial pos="0 -0.103563 0" quat="0.707107 0.707107 0 0" mass="0.8447" diaginertia="0.00247074 0.00247074 0.000380115" />
+       <joint name="joint_2" pos="0 0 0" axis="0 0 1" limited="true" range="0.820305 5.46288" class="large_joint" damping="9.2"  armature="1.656"/>
+       <geom name="link_2" type="mesh" rgba="0.17 0.17 0.17 1" mesh="arm_half_1" />
+         <geom name="ring_2" class="large_ring" mass="1e-9"/>
+
+      <body name="b_3" pos="0 -0.205 0" quat="0.707107 -0.707107 0 0">
+        <inertial pos="0 0 -0.102245" mass="0.8447" diaginertia="0.00247074 0.00247074 0.000380115" />
+        <joint name="joint_3" pos="0 0 0" axis="0 0 1" class="large_joint" damping="3.95" armature="0.711" limited="false"/>
+        <geom name="link_3" type="mesh" rgba="0.17 0.17 0.17 1" mesh="arm_half_2" />
+         <geom name="ring_3" class="large_ring" mass="1e-9"/>
+
+      <body name="b_4"  pos="0 0 -0.205" quat="0 0 0.707107 0.707107">
+        <inertial pos="0 0.081 -0.0086" quat="0.707107 0.707107 0 0" mass="0.6763" diaginertia="0.00142022 0.00142022 0.000304335" />
+        <joint name="joint_4" pos="0 0 0" axis="0 0 1" limited="true" range="0.523599 5.75959"  class="large_joint" damping="3.95"  armature="0.711"/>
+        <geom name="link_4" type="mesh" rgba="0.17 0.17 0.17 1" mesh="forearm" />
+         <geom name="ring_4" class="large_ring" mass="1e-9"/>
+
+      <body name="b_5"  pos="0 0.2073 -0.0114" quat="0 0 -0.707107 0.707107">
+         <inertial pos="0 0.00288489 -0.0541933" mass="0.463" diaginertia="0.000432132 0.000432132 9.26e-05" />
+         <joint name="joint_5" pos="0 0 0" axis="0 0 1"  class="small_joint" damping="0.5" armature="0.09" limited="false"/>
+         <geom name="link_5" type="mesh" rgba="0.17 0.17 0.17 1" mesh="wrist_spherical_1" />
+         <geom name="ring_5" class="small_ring" mass="1e-9"/>
+
+      <body name="b_6" pos="0 0 -0.10375" quat="0 0 0.707107 0.707107">
+         <inertial pos="0 0.0497209 -0.00285628" quat="0.707107 0.707107 0 0" mass="0.463" diaginertia="0.000432132 0.000432132 9.26e-05" />
+         <joint name="joint_6" pos="0 0 0" axis="0 0 1" limited="true" range="1.13446 5.14872"  class="small_joint"  damping="0.5" armature="0.21"/>
+         <geom name="link_6" type="mesh" rgba="0.17 0.17 0.17 1" mesh="wrist_spherical_2" />
+         <geom name="ring_6" class="small_ring" mass="1e-9"/>
+
+      <body name="b_7" pos="0 0.10375 0" quat="0 0 -0.707107 0.707107">
+         <inertial pos="0 0 -0.06" quat="0.5 0.5 -0.5 0.5" mass="0.99" diaginertia="0.0005816 0.000345324 0.000345324" />
+         <joint name="joint_7" pos="0 0 0" axis="0 0 1"  class="small_joint" damping="0.5" armature=".21" limited="false"/>
+         <geom name="ring_7" class="small_ring" mass="1e-9"/>
+         <site name="wristsite" quat="0.0 0.70710678118 0.70710678118 0.0" />
+
+</body>
+</body>
+</body>
+</body>
+</body>
+</body>
+</body>
+</body>
+
+</worldbody>
+
+
+
+<!-- Prevent contact between the base and the first body when the base is a direct child of the worldbody. -->
+<!-- Prevents contacts between the hand and the fingers when the hand is a direct child of the worldbody. -->
+<contact>
+  <exclude body1="b_base" body2="b_1"/>
+</contact>
+
+</mujoco>
+
+
+
