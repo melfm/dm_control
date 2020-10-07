@@ -168,15 +168,16 @@ class Reach(composer.Task):
                                                       friction="2 0.1 0.002",
                                                       material="j2s7/marble")
         elif table_col_tag == 2:
-            self.root_entity.mjcf_model.worldbody.add('geom',
-                                                      type='plane',
-                                                      pos="0 0 0.01",
-                                                      size="0.6 0.6 0.5",
-                                                      rgba=".6 .6 .5 1",
-                                                      contype="1",
-                                                      conaffinity="1",
-                                                      friction="2 0.1 0.002",
-                                                      material="j2s7/navy_blue")
+            self.root_entity.mjcf_model.worldbody.add(
+                'geom',
+                type='plane',
+                pos="0 0 0.01",
+                size="0.6 0.6 0.5",
+                rgba=".6 .6 .5 1",
+                contype="1",
+                conaffinity="1",
+                friction="2 0.1 0.002",
+                material="j2s7/navy_blue")
         elif table_col_tag == 3:
             self.root_entity.mjcf_model.worldbody.add('geom',
                                                       type='plane',
@@ -198,25 +199,27 @@ class Reach(composer.Task):
                                                       friction="2 0.1 0.002",
                                                       material="j2s7/wood")
         elif table_col_tag == 5:
-            self.root_entity.mjcf_model.worldbody.add('geom',
-                                                      type='plane',
-                                                      pos="0 0 0.01",
-                                                      size="0.6 0.6 0.5",
-                                                      rgba=".6 .6 .5 1",
-                                                      contype="1",
-                                                      conaffinity="1",
-                                                      friction="2 0.1 0.002",
-                                                      material="j2s7/light_wood_v3")
+            self.root_entity.mjcf_model.worldbody.add(
+                'geom',
+                type='plane',
+                pos="0 0 0.01",
+                size="0.6 0.6 0.5",
+                rgba=".6 .6 .5 1",
+                contype="1",
+                conaffinity="1",
+                friction="2 0.1 0.002",
+                material="j2s7/light_wood_v3")
         elif table_col_tag == 6:
-            self.root_entity.mjcf_model.worldbody.add('geom',
-                                                      type='plane',
-                                                      pos="0 0 0.01",
-                                                      size="0.6 0.6 0.5",
-                                                      rgba=".6 .6 .5 1",
-                                                      contype="1",
-                                                      conaffinity="1",
-                                                      friction="2 0.1 0.002",
-                                                      material="j2s7/light_wood_v2")
+            self.root_entity.mjcf_model.worldbody.add(
+                'geom',
+                type='plane',
+                pos="0 0 0.01",
+                size="0.6 0.6 0.5",
+                rgba=".6 .6 .5 1",
+                contype="1",
+                conaffinity="1",
+                friction="2 0.1 0.002",
+                material="j2s7/light_wood_v2")
         if sky_col_tag == 1:
             # Red stary sky
             self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
@@ -337,7 +340,150 @@ class Reach(composer.Task):
                 random_state=random_state))
 
 
-def _reach(obs_settings, use_site):
+class ReachEval(composer.Task):
+    """Bring the hand close to a target prop or site."""
+    def __init__(self, arena, arm, hand, prop, obs_settings, workspace,
+                 control_timestep):
+        """Initializes a new `Reach` task.
+
+    Args:
+      arena: `composer.Entity` instance.
+      arm: `robot_base.RobotArm` instance.
+      hand: `robot_base.RobotHand` instance.
+      prop: `composer.Entity` instance specifying the prop to reach to, or None
+        in which case the target is a fixed site whose position is specified by
+        the workspace.
+      obs_settings: `observations.ObservationSettings` instance.
+      workspace: `_ReachWorkspace` specifying the placement of the prop and TCP.
+      control_timestep: Float specifying the control timestep in seconds.
+    """
+        self._arena = arena
+        self._arm = arm
+        self._hand = hand
+        self._arm.attach(self._hand)
+        self._arena.attach_offset(self._arm, offset=workspace.arm_offset)
+        self.control_timestep = control_timestep
+        self._tcp_initializer = initializers.ToolCenterPointInitializer(
+            self._hand,
+            self._arm,
+            position=distributions.Uniform(*workspace.tcp_bbox),
+            quaternion=workspaces.DOWN_QUATERNION)
+
+        # Add custom camera observable.
+        self._task_observables = cameras.add_camera_observables(
+            arena, obs_settings, cameras.FRONT_FAR)
+
+        target_pos_distribution = distributions.Uniform(*workspace.target_bbox)
+        self._prop = prop
+        if prop:
+            # The prop itself is used to visualize the target location.
+            self._make_target_site(parent_entity=prop, visible=False)
+            self._target = self._arena.add_free_entity(prop)
+            self._prop_placer = initializers.PropPlacer(
+                props=[prop],
+                position=target_pos_distribution,
+                quaternion=workspaces.uniform_z_rotation,
+                settle_physics=True)
+        else:
+            self._target = self._make_target_site(parent_entity=arena,
+                                                  visible=True)
+            self._target_placer = target_pos_distribution
+
+            obs = observable.MJCFFeature('pos', self._target)
+            obs.configure(**obs_settings.prop_pose._asdict())
+            self._task_observables['target_position'] = obs
+
+        # Randomize the env visual scene
+        self.root_entity.mjcf_model.worldbody.add('geom',
+                                                    type='plane',
+                                                    pos="0 0 0.01",
+                                                    size="0.6 0.6 0.5",
+                                                    rgba=".6 .6 .5 1",
+                                                    contype="1",
+                                                    conaffinity="1",
+                                                    friction="2 0.1 0.002",
+                                                    material="j2s7/robot_bw")
+
+        # Blue stary sky
+        self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
+        self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
+            [.4, .6, .8])
+        self.root_entity.mjcf_model.asset.texture[0].width = 800
+        self.root_entity.mjcf_model.asset.texture[0].height = 800
+
+        # TODO: Remove the checkerboard groundplane
+        # For now this somehow sets it to a white plane!
+        self.root_entity.mjcf_model.asset.texture[1].width = 1
+        self.root_entity.mjcf_model.asset.texture[1].height = 1
+        # Add sites for visualizing the prop and target bounding boxes.
+        workspaces.add_bbox_site(body=self.root_entity.mjcf_model.worldbody,
+                                 lower=workspace.tcp_bbox.lower,
+                                 upper=workspace.tcp_bbox.upper,
+                                 rgba=constants.GREEN,
+                                 name='tcp_spawn_area')
+        workspaces.add_bbox_site(body=self.root_entity.mjcf_model.worldbody,
+                                 lower=workspace.target_bbox.lower,
+                                 upper=workspace.target_bbox.upper,
+                                 rgba=constants.BLUE,
+                                 name='target_spawn_area')
+
+    def _make_target_site(self, parent_entity, visible):
+        return workspaces.add_target_site(
+            body=parent_entity.mjcf_model.worldbody,
+            radius=_TARGET_RADIUS,
+            visible=visible,
+            rgba=constants.RED,
+            name='target_site')
+
+    @property
+    def root_entity(self):
+        return self._arena
+
+    @property
+    def arm(self):
+        return self._arm
+
+    @property
+    def hand(self):
+        return self._hand
+
+    @property
+    def task_observables(self):
+        return self._task_observables
+
+    # def get_reward_sparse(self, physics):
+    #   hand_pos = physics.bind(self._hand.tool_center_point).xpos
+    #   target_pos = physics.bind(self._target).xpos
+    #   distance = np.linalg.norm(hand_pos - target_pos)
+    #   return rewards.tolerance(
+    #       distance, bounds=(0, _TARGET_RADIUS), margin=_TARGET_RADIUS)
+
+    def get_reward(self, physics):
+        c1 = 1000
+        c2 = 0.01
+        c3 = 0.001
+        hand_pos = physics.bind(self._hand.tool_center_point).xpos
+        target_pos = physics.bind(self._target).xpos
+        distance = np.linalg.norm(hand_pos - target_pos)
+        reachRew = c1 * (self.maxReachDist - distance) + c1 * (
+            np.exp(-(distance**2) / c2) + np.exp(-(distance**2) / c3))
+        reachRew = max(reachRew, 0)
+        return reachRew
+
+    def initialize_episode(self, physics, random_state):
+        self._hand.set_grasp(physics, close_factors=random_state.uniform())
+        self._tcp_initializer(physics, random_state)
+        init_hand_pos = physics.bind(self._hand.tool_center_point).xpos
+        self.target_pos = physics.bind(self._target).xpos
+        self.maxReachDist = np.linalg.norm(init_hand_pos - self.target_pos)
+        if self._prop:
+            self._prop_placer(physics, random_state)
+        else:
+            physics.bind(self._target).pos = (self._target_placer(
+                random_state=random_state))
+
+
+def _reach(obs_settings, use_site, evalenv=False):
     """Configure and instantiate a `Reach` task.
 
   Args:
@@ -363,16 +509,24 @@ def _reach(obs_settings, use_site):
     table_col_tag = random.choice(list(env_randomizer.table_tags.values()))
     sky_col_tag = random.choice(list(env_randomizer.sky_tags.values()))
 
-    task = Reach(arena=arena,
-                 arm=arm,
-                 hand=hand,
-                 prop=prop,
-                 obs_settings=obs_settings,
-                 workspace=workspace,
-                 control_timestep=constants.CONTROL_TIMESTEP,
-                 table_col_tag=table_col_tag,
-                 sky_col_tag=sky_col_tag)
-
+    if evalenv:
+        task = ReachEval(arena=arena,
+                         arm=arm,
+                         hand=hand,
+                         prop=prop,
+                         obs_settings=obs_settings,
+                         workspace=workspace,
+                         control_timestep=constants.CONTROL_TIMESTEP)
+    else:
+        task = Reach(arena=arena,
+                arm=arm,
+                hand=hand,
+                prop=prop,
+                obs_settings=obs_settings,
+                workspace=workspace,
+                control_timestep=constants.CONTROL_TIMESTEP,
+                table_col_tag=table_col_tag,
+                sky_col_tag=sky_col_tag)
     mod_id = str(table_col_tag) + str(sky_col_tag)
     return task, mod_id
 
@@ -390,9 +544,17 @@ def reach_duplo_vision():
 @registry.add(tags.FEATURES, tags.EASY)
 def reach_site_features():
     task, tag = _reach(obs_settings=observations.PERFECT_FEATURES,
-                       use_site=True)
+                       use_site=True, evalenv=False)
     return task, tag
 
+@registry.add(tags.FEATURES, tags.EASY)
+def reach_site_features_eval():
+    # Note: This registry only allows registering one env
+    # So calling both this and reach_site_features wont give
+    # different envs!
+    task, tag = _reach(obs_settings=observations.PERFECT_FEATURES,
+                       use_site=True, evalenv=True)
+    return task, tag
 
 @registry.add(tags.VISION, tags.EASY)
 def reach_site_vision():
