@@ -35,7 +35,7 @@ FRONT_CLOSE = CameraSpec(
 
 FRONT_FAR = CameraSpec(
     name='front_far',
-    pos=(0., -0.8, 1.),
+    pos=(0., -0.8, 1.1),
     xyaxes=(1., 0., 0., 0., 0.7, 0.75)
 )
 

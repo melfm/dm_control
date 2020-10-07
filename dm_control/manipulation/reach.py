@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import print_function
 
 import collections
+from collections import OrderedDict
+import random
 
 from dm_control import composer
 from dm_control.composer import initializers
@@ -52,12 +54,10 @@ _DUPLO_WORKSPACE = _ReachWorkspace(
 # Fixing the target for single-goal reach
 # X:Left/Right+   Y:Up/Down   Z:Forward/Backward
 _SITE_WORKSPACE = _ReachWorkspace(
-    target_bbox=workspaces.BoundingBox(
-        lower=(0.23, 0.12, 0.02),
-        upper=(0.25, 0.15, 0.05)),
-    tcp_bbox=workspaces.BoundingBox(
-        lower=(0.1, 0.1, 0.02),
-        upper=(0.1, 0.1, 0.02)),
+    target_bbox=workspaces.BoundingBox(lower=(0.23, 0.12, 0.02),
+                                       upper=(0.25, 0.15, 0.05)),
+    tcp_bbox=workspaces.BoundingBox(lower=(0.1, 0.1, 0.02),
+                                    upper=(0.1, 0.1, 0.02)),
     arm_offset=robots.ARM_OFFSET)
 
 # _SITE_WORKSPACE = _ReachWorkspace(
@@ -70,10 +70,33 @@ _SITE_WORKSPACE = _ReachWorkspace(
 _TARGET_RADIUS = 0.05
 
 
+class EnvRandomizer():
+    """EnvRandomizer Class used for visually randomizing the environment.
+    """
+    def __init__(self):
+
+        self.table_tags = OrderedDict([('table_dark_wood', 0),
+                                       ('table_marble', 1), ('table_blue', 2),
+                                       ('table_tennis', 3), ('table_wood', 4),
+                                       ('table_light_wood_v3', 5),
+                                       ('table_light_wood_v2', 6),
+                                       ('default', 7)])
+
+        self.goal_tags = OrderedDict([('goal_red', 0), ('goal_yellow', 1),
+                                      ('goal_blue', 2), ('goal_pink', 3),
+                                      ('default', 4)])
+        self.sky_tags = OrderedDict([('default', 0), ('red_star', 1),
+                                     ('orange_star', 2), ('yellow_star', 3),
+                                     ('pink_star', 4), ('amber_star', 5),
+                                     ('black_star', 6), ('default', 7)])
+
+        self.eval_env_tags = OrderedDict([('table_granite_goal_purple', 0)])
+
+
 class Reach(composer.Task):
     """Bring the hand close to a target prop or site."""
     def __init__(self, arena, arm, hand, prop, obs_settings, workspace,
-                 control_timestep):
+                 control_timestep, table_col_tag, sky_col_tag):
         """Initializes a new `Reach` task.
 
     Args:
@@ -123,6 +146,129 @@ class Reach(composer.Task):
             obs.configure(**obs_settings.prop_pose._asdict())
             self._task_observables['target_position'] = obs
 
+        # Randomize the env visual scene
+        if table_col_tag == 0:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/wood")
+        elif table_col_tag == 1:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/marble")
+        elif table_col_tag == 2:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/navy_blue")
+        elif table_col_tag == 3:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/tennis")
+        elif table_col_tag == 4:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/wood")
+        elif table_col_tag == 5:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/light_wood_v3")
+        elif table_col_tag == 6:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/light_wood_v2")
+        if sky_col_tag == 1:
+            # Red stary sky
+            self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
+            self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
+                [.8, .1, .4])
+            self.root_entity.mjcf_model.asset.texture[0].width = 800
+            self.root_entity.mjcf_model.asset.texture[0].height = 800
+
+        elif sky_col_tag == 2:
+            # Orange stary sky
+            self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
+            self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
+                [.8, .5, .1])
+            self.root_entity.mjcf_model.asset.texture[0].width = 800
+            self.root_entity.mjcf_model.asset.texture[0].height = 800
+
+        elif sky_col_tag == 3:
+            # Yellow stary sky
+            self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
+            self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
+                [1, 1, .4])
+            self.root_entity.mjcf_model.asset.texture[0].width = 800
+            self.root_entity.mjcf_model.asset.texture[0].height = 800
+
+        elif sky_col_tag == 4:
+            # Orange stary sky
+            self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
+            self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
+                [1, .5, 1])
+            self.root_entity.mjcf_model.asset.texture[0].width = 800
+            self.root_entity.mjcf_model.asset.texture[0].height = 800
+
+        elif sky_col_tag == 5:
+            # Orange stary sky
+            self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
+            self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
+                [1, .6, .4])
+            self.root_entity.mjcf_model.asset.texture[0].width = 800
+            self.root_entity.mjcf_model.asset.texture[0].height = 800
+
+        elif sky_col_tag == 6:
+            # Orange stary sky
+            self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
+            self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
+                [0, 0, 0])
+            self.root_entity.mjcf_model.asset.texture[0].width = 800
+            self.root_entity.mjcf_model.asset.texture[0].height = 800
+
+        # TODO: Remove the checkerboard groundplane
+        # For now this somehow sets it to a white plane!
+        self.root_entity.mjcf_model.asset.texture[1].width = 1
+        self.root_entity.mjcf_model.asset.texture[1].height = 1
         # Add sites for visualizing the prop and target bounding boxes.
         workspaces.add_bbox_site(body=self.root_entity.mjcf_model.worldbody,
                                  lower=workspace.tcp_bbox.lower,
@@ -167,16 +313,16 @@ class Reach(composer.Task):
     #       distance, bounds=(0, _TARGET_RADIUS), margin=_TARGET_RADIUS)
 
     def get_reward(self, physics):
-      c1 = 1000
-      c2 = 0.01
-      c3 = 0.001
-      hand_pos = physics.bind(self._hand.tool_center_point).xpos
-      target_pos = physics.bind(self._target).xpos
-      distance = np.linalg.norm(hand_pos - target_pos)
-      reachRew = c1 * (self.maxReachDist - distance) + c1 * (
-          np.exp(-(distance**2) / c2) + np.exp(-(distance**2) / c3))
-      reachRew = max(reachRew, 0)
-      return reachRew
+        c1 = 1000
+        c2 = 0.01
+        c3 = 0.001
+        hand_pos = physics.bind(self._hand.tool_center_point).xpos
+        target_pos = physics.bind(self._target).xpos
+        distance = np.linalg.norm(hand_pos - target_pos)
+        reachRew = c1 * (self.maxReachDist - distance) + c1 * (
+            np.exp(-(distance**2) / c2) + np.exp(-(distance**2) / c3))
+        reachRew = max(reachRew, 0)
+        return reachRew
 
     def initialize_episode(self, physics, random_state):
         self._hand.set_grasp(physics, close_factors=random_state.uniform())
@@ -212,14 +358,23 @@ def _reach(obs_settings, use_site):
         workspace = _DUPLO_WORKSPACE
         prop = props.Duplo(observable_options=observations.make_options(
             obs_settings, observations.FREEPROP_OBSERVABLES))
+
+    env_randomizer = EnvRandomizer()
+    table_col_tag = random.choice(list(env_randomizer.table_tags.values()))
+    sky_col_tag = random.choice(list(env_randomizer.sky_tags.values()))
+
     task = Reach(arena=arena,
                  arm=arm,
                  hand=hand,
                  prop=prop,
                  obs_settings=obs_settings,
                  workspace=workspace,
-                 control_timestep=constants.CONTROL_TIMESTEP)
-    return task
+                 control_timestep=constants.CONTROL_TIMESTEP,
+                 table_col_tag=table_col_tag,
+                 sky_col_tag=sky_col_tag)
+
+    mod_id = str(table_col_tag) + str(sky_col_tag)
+    return task, mod_id
 
 
 @registry.add(tags.FEATURES, tags.EASY)
@@ -234,7 +389,9 @@ def reach_duplo_vision():
 
 @registry.add(tags.FEATURES, tags.EASY)
 def reach_site_features():
-    return _reach(obs_settings=observations.PERFECT_FEATURES, use_site=True)
+    task, tag = _reach(obs_settings=observations.PERFECT_FEATURES,
+                       use_site=True)
+    return task, tag
 
 
 @registry.add(tags.VISION, tags.EASY)

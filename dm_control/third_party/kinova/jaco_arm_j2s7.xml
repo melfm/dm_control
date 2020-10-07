@@ -17,6 +17,49 @@ higher values of njmax and nconmax help instabilities but make sim slower
     <mesh name="wrist_spherical_2" file="wrist_spherical_2.stl" />
   </asset>
 
+  <asset>
+      <texture name="wood" file="textures/wood.png" type="cube"/>
+      <material shininess=".1" name="wood" texture="wood" specular="0.4"/>
+
+      <texture name="real_door" file="textures/real_door.png" type="cube"/>
+      <material shininess=".1" name="real_door" texture="real_door" specular=".4"/>
+
+      <texture name="darkwood" file="textures/darkwood.png" type="cube"/>
+      <material shininess=".1" name="darkwood" texture="darkwood" specular="0.4"/>
+
+      <texture name="granite" file="textures/granite.png" type="2d"/>
+      <material shininess=".1" name="granite" texture="granite" specular="0.4"/>
+
+      <texture name="light_wood" file="textures/light_wood.png" type="cube"/>
+      <material shininess=".1" name="light_wood" texture="light_wood" specular="0.4"/>
+
+      <texture name="light_wood_v2" file="textures/light_wood_v2.png" type="cube"/>
+      <material shininess=".1" name="light_wood_v2" texture="light_wood_v2" specular="0.4"/>
+
+      <texture name="light_wood_v3" file="textures/light_wood_v3.png" type="2d"/>
+      <material shininess=".1" name="light_wood_v3" texture="light_wood_v3" specular="0.4"/>
+
+      <texture name="metal" file="textures/metal.png" type="2d"/>
+      <material shininess=".1" name="metal" texture="metal" specular="0.4"/>
+
+      <texture name="tennis" file="textures/tennis.png" type="2d"/>
+      <material shininess=".1" name="tennis" texture="tennis" specular="0.4"/>
+
+      <texture name="robot" file="textures/robot.png" type="2d"/>
+      <material shininess=".1" name="robot" texture="robot" specular="0.4"/>
+
+      <texture name="robot_bw" file="textures/robot_bw.png" type="2d"/>
+      <material shininess=".1" name="robot_bw" texture="robot_bw" specular="0.4"/>
+
+      <texture name="navy_blue" file="textures/navy_blue.png" type="2d"/>
+      <material shininess=".1" name="navy_blue" texture="navy_blue" specular="0.4"/>
+
+      <texture name="marble" file="textures/marble.png" type="2d"/>
+      <material shininess=".1" name="marble" texture="marble" specular="0.4"/>
+
+      <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256"/>
+  </asset>
+
 <default>
     <geom type="mesh" material="dark_gray" condim="3" contype="3" conaffinity="2"/>
     <joint type="hinge"/>

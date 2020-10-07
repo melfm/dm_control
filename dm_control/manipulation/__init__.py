@@ -74,6 +74,7 @@ def load(environment_name, seed=None):
   Returns:
     An instance of `composer.Environment`.
   """
-  task = _registry.get_constructor(environment_name)()
+  task, tag = _registry.get_constructor(environment_name)()
   time_limit = _TIME_LIMIT if _get_timeout() else float('inf')
-  return _composer.Environment(task, time_limit=time_limit, random_state=seed)
+  task_composed = _composer.Environment(task, time_limit=time_limit, random_state=seed)
+  return task_composed, tag
