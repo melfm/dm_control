@@ -57,6 +57,9 @@ higher values of njmax and nconmax help instabilities but make sim slower
       <texture name="marble" file="textures/marble.png" type="2d"/>
       <material shininess=".1" name="marble" texture="marble" specular="0.4"/>
 
+      <texture name="real_desk" file="textures/real_desk.png" type="2d"/>
+      <material shininess=".1" name="real_desk" texture="real_desk" specular="0.4"/>
+
       <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256"/>
   </asset>
 

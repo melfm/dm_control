@@ -82,13 +82,17 @@ class EnvRandomizer():
                                        ('table_light_wood_v2', 6),
                                        ('default', 7)])
 
+        self.table_eval_tags = OrderedDict([('robot', 0), ('robot_bw', 1),
+                                            ('real_desk', 2), ('default', 3)])
+        # Not used atm
         self.goal_tags = OrderedDict([('goal_red', 0), ('goal_yellow', 1),
                                       ('goal_blue', 2), ('goal_pink', 3),
                                       ('default', 4)])
+
         self.sky_tags = OrderedDict([('default', 0), ('red_star', 1),
                                      ('orange_star', 2), ('yellow_star', 3),
                                      ('pink_star', 4), ('amber_star', 5),
-                                     ('black_star', 6), ('default', 7)])
+                                     ('white_star', 6), ('black_star', 7)])
 
         self.eval_env_tags = OrderedDict([('table_granite_goal_purple', 0)])
 
@@ -146,7 +150,7 @@ class Reach(composer.Task):
             obs.configure(**obs_settings.prop_pose._asdict())
             self._task_observables['target_position'] = obs
 
-        # Randomize the env visual scene
+        # Randomize the table surface
         if table_col_tag == 0:
             self.root_entity.mjcf_model.worldbody.add('geom',
                                                       type='plane',
@@ -156,7 +160,7 @@ class Reach(composer.Task):
                                                       contype="1",
                                                       conaffinity="1",
                                                       friction="2 0.1 0.002",
-                                                      material="j2s7/wood")
+                                                      material="j2s7/darkwood")
         elif table_col_tag == 1:
             self.root_entity.mjcf_model.worldbody.add('geom',
                                                       type='plane',
@@ -209,6 +213,7 @@ class Reach(composer.Task):
                 conaffinity="1",
                 friction="2 0.1 0.002",
                 material="j2s7/light_wood_v3")
+
         elif table_col_tag == 6:
             self.root_entity.mjcf_model.worldbody.add(
                 'geom',
@@ -220,6 +225,8 @@ class Reach(composer.Task):
                 conaffinity="1",
                 friction="2 0.1 0.002",
                 material="j2s7/light_wood_v2")
+
+        # Sky change of colour
         if sky_col_tag == 1:
             # Red stary sky
             self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
@@ -245,7 +252,7 @@ class Reach(composer.Task):
             self.root_entity.mjcf_model.asset.texture[0].height = 800
 
         elif sky_col_tag == 4:
-            # Orange stary sky
+            # Pink stary sky
             self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
             self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
                 [1, .5, 1])
@@ -253,7 +260,7 @@ class Reach(composer.Task):
             self.root_entity.mjcf_model.asset.texture[0].height = 800
 
         elif sky_col_tag == 5:
-            # Orange stary sky
+            # Amber stary sky
             self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
             self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
                 [1, .6, .4])
@@ -261,8 +268,16 @@ class Reach(composer.Task):
             self.root_entity.mjcf_model.asset.texture[0].height = 800
 
         elif sky_col_tag == 6:
-            # Orange stary sky
-            self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
+            # White stary sky
+            self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
+                [1., 1., 1.])
+            self.root_entity.mjcf_model.asset.texture[0].rgb2 = np.array(
+                [1., 1., 1.])
+            self.root_entity.mjcf_model.asset.texture[0].width = 800
+            self.root_entity.mjcf_model.asset.texture[0].height = 800
+
+        elif sky_col_tag == 7:
+            # Black stary sky
             self.root_entity.mjcf_model.asset.texture[0].rgb1 = np.array(
                 [0, 0, 0])
             self.root_entity.mjcf_model.asset.texture[0].width = 800
@@ -343,7 +358,7 @@ class Reach(composer.Task):
 class ReachEval(composer.Task):
     """Bring the hand close to a target prop or site."""
     def __init__(self, arena, arm, hand, prop, obs_settings, workspace,
-                 control_timestep):
+                 control_timestep, table_col_tag):
         """Initializes a new `Reach` task.
 
     Args:
@@ -393,16 +408,38 @@ class ReachEval(composer.Task):
             obs.configure(**obs_settings.prop_pose._asdict())
             self._task_observables['target_position'] = obs
 
-        # Randomize the env visual scene
-        self.root_entity.mjcf_model.worldbody.add('geom',
-                                                    type='plane',
-                                                    pos="0 0 0.01",
-                                                    size="0.6 0.6 0.5",
-                                                    rgba=".6 .6 .5 1",
-                                                    contype="1",
-                                                    conaffinity="1",
-                                                    friction="2 0.1 0.002",
-                                                    material="j2s7/robot_bw")
+        # Randomize the table surface
+        if table_col_tag == 0:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/robot")
+        elif table_col_tag == 1:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/robot_bw")
+
+        elif table_col_tag == 2:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/real_desk")
 
         # Blue stary sky
         self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
@@ -411,7 +448,7 @@ class ReachEval(composer.Task):
         self.root_entity.mjcf_model.asset.texture[0].width = 800
         self.root_entity.mjcf_model.asset.texture[0].height = 800
 
-        # TODO: Remove the checkerboard groundplane
+        # How to remove the checkerboard groundplane ?
         # For now this somehow sets it to a white plane!
         self.root_entity.mjcf_model.asset.texture[1].width = 1
         self.root_entity.mjcf_model.asset.texture[1].height = 1
@@ -507,6 +544,8 @@ def _reach(obs_settings, use_site, evalenv=False):
 
     env_randomizer = EnvRandomizer()
     table_col_tag = random.choice(list(env_randomizer.table_tags.values()))
+    table_env_col_tag = random.choice(
+        list(env_randomizer.table_eval_tags.values()))
     sky_col_tag = random.choice(list(env_randomizer.sky_tags.values()))
 
     if evalenv:
@@ -516,18 +555,20 @@ def _reach(obs_settings, use_site, evalenv=False):
                          prop=prop,
                          obs_settings=obs_settings,
                          workspace=workspace,
-                         control_timestep=constants.CONTROL_TIMESTEP)
+                         control_timestep=constants.CONTROL_TIMESTEP,
+                         table_col_tag=table_env_col_tag)
     else:
         task = Reach(arena=arena,
-                arm=arm,
-                hand=hand,
-                prop=prop,
-                obs_settings=obs_settings,
-                workspace=workspace,
-                control_timestep=constants.CONTROL_TIMESTEP,
-                table_col_tag=table_col_tag,
-                sky_col_tag=sky_col_tag)
-    mod_id = str(table_col_tag) + str(sky_col_tag)
+                     arm=arm,
+                     hand=hand,
+                     prop=prop,
+                     obs_settings=obs_settings,
+                     workspace=workspace,
+                     control_timestep=constants.CONTROL_TIMESTEP,
+                     table_col_tag=table_col_tag,
+                     sky_col_tag=sky_col_tag)
+    mod_id = str(table_col_tag) + str(sky_col_tag) + str(
+        random.randint(10, 1000))
     return task, mod_id
 
 
@@ -544,17 +585,18 @@ def reach_duplo_vision():
 @registry.add(tags.FEATURES, tags.EASY)
 def reach_site_features():
     task, tag = _reach(obs_settings=observations.PERFECT_FEATURES,
-                       use_site=True, evalenv=False)
+                       use_site=True,
+                       evalenv=False)
     return task, tag
+
 
 @registry.add(tags.FEATURES, tags.EASY)
 def reach_site_features_eval():
-    # Note: This registry only allows registering one env
-    # So calling both this and reach_site_features wont give
-    # different envs!
     task, tag = _reach(obs_settings=observations.PERFECT_FEATURES,
-                       use_site=True, evalenv=True)
+                       use_site=True,
+                       evalenv=True)
     return task, tag
+
 
 @registry.add(tags.VISION, tags.EASY)
 def reach_site_vision():
