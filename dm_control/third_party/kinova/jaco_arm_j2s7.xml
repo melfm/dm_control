@@ -33,6 +33,9 @@ higher values of njmax and nconmax help instabilities but make sim slower
       <texture name="light_wood" file="textures/light_wood.png" type="cube"/>
       <material shininess=".1" name="light_wood" texture="light_wood" specular="0.4"/>
 
+      <texture name="wood_light" file="textures/wood_light.png" type="cube"/>
+      <material shininess=".1" name="wood_light" texture="wood_light" specular="0.4"/>
+
       <texture name="light_wood_v2" file="textures/light_wood_v2.png" type="cube"/>
       <material shininess=".1" name="light_wood_v2" texture="light_wood_v2" specular="0.4"/>
 
@@ -57,8 +60,20 @@ higher values of njmax and nconmax help instabilities but make sim slower
       <texture name="marble" file="textures/marble.png" type="2d"/>
       <material shininess=".1" name="marble" texture="marble" specular="0.4"/>
 
+      <texture name="marble_v2" file="textures/marble_v2.png" type="2d"/>
+      <material shininess=".1" name="marble_v2" texture="marble_v2" specular="0.4"/>
+
       <texture name="real_desk" file="textures/real_desk.png" type="2d"/>
       <material shininess=".1" name="real_desk" texture="real_desk" specular="0.4"/>
+
+      <texture name="grass" file="textures/grass.png" type="2d"/>
+      <material shininess=".1" name="grass" texture="grass" specular="0.4"/>
+
+      <texture name="wood_gray" file="textures/wood_gray.png" type="2d"/>
+      <material shininess=".1" name="wood_gray" texture="wood_gray" specular="0.4"/>
+
+      <texture name="blue_cloud" file="textures/blue_cloud.png" type="2d"/>
+      <material shininess=".1" name="blue_cloud" texture="blue_cloud" specular="0.4"/>
 
       <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256"/>
   </asset>

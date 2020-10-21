@@ -18,6 +18,8 @@
 CONTROL_TIMESTEP = 0.04  # Interval between agent actions, in seconds.
 
 # Predefined RGBA values
+RED_A = (1., 0., 0., 1.0)
+PURPLE_A = (0.5, 0.2, 1.0, 1.0)
 RED = (1., 0., 0., 0.3)
 GREEN = (0., 1., 0., 0.3)
 BLUE = (0., 0., 1., 0.3)

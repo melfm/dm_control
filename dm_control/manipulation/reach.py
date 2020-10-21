@@ -78,12 +78,15 @@ class EnvRandomizer():
         self.table_tags = OrderedDict([('table_dark_wood', 0),
                                        ('table_marble', 1), ('table_blue', 2),
                                        ('table_tennis', 3), ('table_wood', 4),
-                                       ('table_light_wood_v3', 5),
+                                       ('table_wood_light', 5),
                                        ('table_light_wood_v2', 6),
-                                       ('default', 7)])
+                                       ('table_metal', 7), ('table_grass', 8),
+                                       ('table_blue_cloud', 9),
+                                       ('table_marble_v2', 10),
+                                       ('table_wood_gray', 11)])
 
         self.table_eval_tags = OrderedDict([('robot', 0), ('robot_bw', 1),
-                                            ('real_desk', 2), ('default', 3)])
+                                            ('real_desk', 2)])
         # Not used atm
         self.goal_tags = OrderedDict([('goal_red', 0), ('goal_yellow', 1),
                                       ('goal_blue', 2), ('goal_pink', 3),
@@ -93,8 +96,6 @@ class EnvRandomizer():
                                      ('orange_star', 2), ('yellow_star', 3),
                                      ('pink_star', 4), ('amber_star', 5),
                                      ('white_star', 6), ('black_star', 7)])
-
-        self.eval_env_tags = OrderedDict([('table_granite_goal_purple', 0)])
 
 
 class Reach(composer.Task):
@@ -212,7 +213,7 @@ class Reach(composer.Task):
                 contype="1",
                 conaffinity="1",
                 friction="2 0.1 0.002",
-                material="j2s7/light_wood_v3")
+                material="j2s7/wood_light")
 
         elif table_col_tag == 6:
             self.root_entity.mjcf_model.worldbody.add(
@@ -226,6 +227,63 @@ class Reach(composer.Task):
                 friction="2 0.1 0.002",
                 material="j2s7/light_wood_v2")
 
+        elif table_col_tag == 7:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/metal")
+
+        elif table_col_tag == 8:
+            self.root_entity.mjcf_model.worldbody.add('geom',
+                                                      type='plane',
+                                                      pos="0 0 0.01",
+                                                      size="0.6 0.6 0.5",
+                                                      rgba=".6 .6 .5 1",
+                                                      contype="1",
+                                                      conaffinity="1",
+                                                      friction="2 0.1 0.002",
+                                                      material="j2s7/grass")
+
+        elif table_col_tag == 9:
+            self.root_entity.mjcf_model.worldbody.add(
+                'geom',
+                type='plane',
+                pos="0 0 0.01",
+                size="0.6 0.6 0.5",
+                rgba=".6 .6 .5 1",
+                contype="1",
+                conaffinity="1",
+                friction="2 0.1 0.002",
+                material="j2s7/blue_cloud")
+
+        elif table_col_tag == 10:
+            self.root_entity.mjcf_model.worldbody.add(
+                'geom',
+                type='plane',
+                pos="0 0 0.01",
+                size="0.6 0.6 0.5",
+                rgba=".6 .6 .5 1",
+                contype="1",
+                conaffinity="1",
+                friction="2 0.1 0.002",
+                material="j2s7/marble_v2")
+
+        elif table_col_tag == 11:
+            self.root_entity.mjcf_model.worldbody.add(
+                'geom',
+                type='plane',
+                pos="0 0 0.01",
+                size="0.6 0.6 0.5",
+                rgba=".6 .6 .5 1",
+                contype="1",
+                conaffinity="1",
+                friction="2 0.1 0.002",
+                material="j2s7/wood_gray")
         # Sky change of colour
         if sky_col_tag == 1:
             # Red stary sky
@@ -283,6 +341,11 @@ class Reach(composer.Task):
             self.root_entity.mjcf_model.asset.texture[0].width = 800
             self.root_entity.mjcf_model.asset.texture[0].height = 800
 
+        elif sky_col_tag == 8:
+            # Leave the checkerboard
+            self.root_entity.mjcf_model.asset.texture[1].width = 1
+            self.root_entity.mjcf_model.asset.texture[1].height = 1
+
         # TODO: Remove the checkerboard groundplane
         # For now this somehow sets it to a white plane!
         self.root_entity.mjcf_model.asset.texture[1].width = 1
@@ -304,7 +367,7 @@ class Reach(composer.Task):
             body=parent_entity.mjcf_model.worldbody,
             radius=_TARGET_RADIUS,
             visible=visible,
-            rgba=constants.RED,
+            rgba=constants.RED_A,
             name='target_site')
 
     @property
@@ -418,7 +481,7 @@ class ReachEval(composer.Task):
                                                       contype="1",
                                                       conaffinity="1",
                                                       friction="2 0.1 0.002",
-                                                      material="j2s7/robot")
+                                                      material="j2s7/robot_bw")
         elif table_col_tag == 1:
             self.root_entity.mjcf_model.worldbody.add('geom',
                                                       type='plane',
@@ -431,15 +494,16 @@ class ReachEval(composer.Task):
                                                       material="j2s7/robot_bw")
 
         elif table_col_tag == 2:
-            self.root_entity.mjcf_model.worldbody.add('geom',
-                                                      type='plane',
-                                                      pos="0 0 0.01",
-                                                      size="0.6 0.6 0.5",
-                                                      rgba=".6 .6 .5 1",
-                                                      contype="1",
-                                                      conaffinity="1",
-                                                      friction="2 0.1 0.002",
-                                                      material="j2s7/real_desk")
+            self.root_entity.mjcf_model.worldbody.add(
+                'geom',
+                type='plane',
+                pos="0 0 0.01",
+                size="0.6 0.6 0.5",
+                rgba=".6 .6 .5 1",
+                contype="1",
+                conaffinity="1",
+                friction="2 0.1 0.002",
+                material="j2s7/real_desk")
 
         # Blue stary sky
         self.root_entity.mjcf_model.asset.texture[0].mark = 'random'
@@ -469,7 +533,7 @@ class ReachEval(composer.Task):
             body=parent_entity.mjcf_model.worldbody,
             radius=_TARGET_RADIUS,
             visible=visible,
-            rgba=constants.RED,
+            rgba=constants.RED_A,
             name='target_site')
 
     @property
