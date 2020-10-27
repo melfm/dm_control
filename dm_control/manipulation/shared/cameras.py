@@ -39,6 +39,18 @@ FRONT_FAR = CameraSpec(
     xyaxes=(1., 0., 0., 0., 0.7, 0.75)
 )
 
+FRONT_CLOSE_TILT_UP = CameraSpec(
+    name='front_close_tilt_up',
+    pos=(0., -0.6, 1.3),
+    xyaxes=(1., 0., 0., 0., 0.7, 0.75)
+)
+
+FRONT_CLOSE_TILT_DOWN = CameraSpec(
+    name='front_close_tilt_down',
+    pos=(0., -0.4, 0.9),
+    xyaxes=(1., 0., 0., 0., 0.7, 0.75)
+)
+
 TOP_DOWN = CameraSpec(
     name='top_down',
     pos=(0., 0., 2.5),

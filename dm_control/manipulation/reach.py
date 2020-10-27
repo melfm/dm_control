@@ -53,13 +53,32 @@ _DUPLO_WORKSPACE = _ReachWorkspace(
 
 # Fixing the target for single-goal reach
 # X:Left/Right+   Y:Up/Down   Z:Forward/Backward
+# Reach Single Goal Pose 1
 _SITE_WORKSPACE = _ReachWorkspace(
-    target_bbox=workspaces.BoundingBox(lower=(0.23, 0.12, 0.02),
-                                       upper=(0.25, 0.15, 0.05)),
+    target_bbox=workspaces.BoundingBox(lower=(0.35, 0.12, 0.08),
+                                       upper=(0.36, 0.15, 0.08)),
     tcp_bbox=workspaces.BoundingBox(lower=(0.1, 0.1, 0.02),
                                     upper=(0.1, 0.1, 0.02)),
     arm_offset=robots.ARM_OFFSET)
 
+# Reach Single Goal Pose 2
+# (x, z, y)
+# _SITE_WORKSPACE = _ReachWorkspace(
+#     target_bbox=workspaces.BoundingBox(lower=(-0.23, 0.12, 0.08),
+#                                        upper=(-0.25, 0.15, 0.08)),
+#     tcp_bbox=workspaces.BoundingBox(lower=(0.1, 0.1, 0.02),
+#                                     upper=(0.1, 0.1, 0.02)),
+#     arm_offset=robots.ARM_OFFSET)
+
+# Reach Single Goal Pose 3
+# _SITE_WORKSPACE = _ReachWorkspace(
+#     target_bbox=workspaces.BoundingBox(lower=(0., -0.15, 0.08),
+#                                        upper=(0., -0.15, 0.08)),
+#     tcp_bbox=workspaces.BoundingBox(lower=(0.1, 0.1, 0.02),
+#                                     upper=(0.1, 0.1, 0.02)),
+#     arm_offset=robots.ARM_OFFSET)
+
+# Reach Multi Goal
 # _SITE_WORKSPACE = _ReachWorkspace(
 #     target_bbox=workspaces.BoundingBox(lower=(-0.2, -0.2, 0.02),
 #                                        upper=(0.2, 0.2, 0.4)),
@@ -67,7 +86,7 @@ _SITE_WORKSPACE = _ReachWorkspace(
 #                                     upper=(0.2, 0.2, 0.4)),
 #     arm_offset=robots.ARM_OFFSET)
 
-_TARGET_RADIUS = 0.05
+_TARGET_RADIUS = 0.08
 
 
 class EnvRandomizer():
@@ -128,8 +147,27 @@ class Reach(composer.Task):
             quaternion=workspaces.DOWN_QUATERNION)
 
         # Add custom camera observable.
-        self._task_observables = cameras.add_camera_observables(
-            arena, obs_settings, cameras.FRONT_FAR)
+        # Randomize camera viewing angle during training
+        # Experimental
+        randomize_cam = False
+
+        if randomize_cam:
+            camera_angle = random.choice([0, 1, 2, 3])
+            if camera_angle == 0:
+                self._task_observables = cameras.add_camera_observables(
+                    arena, obs_settings, cameras.FRONT_FAR)
+            elif camera_angle == 1:
+                self._task_observables = cameras.add_camera_observables(
+                    arena, obs_settings, cameras.FRONT_CLOSE)
+            elif camera_angle == 2:
+                self._task_observables = cameras.add_camera_observables(
+                    arena, obs_settings, cameras.FRONT_CLOSE_TILT_UP)
+            elif camera_angle == 3:
+                self._task_observables = cameras.add_camera_observables(
+                    arena, obs_settings, cameras.FRONT_CLOSE_TILT_DOWN)
+        else:
+            self._task_observables = cameras.add_camera_observables(
+                arena, obs_settings, cameras.FRONT_FAR)
 
         target_pos_distribution = distributions.Uniform(*workspace.target_bbox)
         self._prop = prop
