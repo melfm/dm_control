@@ -54,12 +54,12 @@ _DUPLO_WORKSPACE = _ReachWorkspace(
 # Fixing the target for single-goal reach
 # X:Left/Right+   Y:Up/Down   Z:Forward/Backward
 # Reach Single Goal Pose 1 - Right near
-# _SITE_WORKSPACE = _ReachWorkspace(
-#     target_bbox=workspaces.BoundingBox(lower=(0.35, 0.12, 0.08),
-#                                        upper=(0.36, 0.15, 0.08)),
-#     tcp_bbox=workspaces.BoundingBox(lower=(0.1, 0.1, 0.02),
-#                                     upper=(0.1, 0.1, 0.02)),
-#     arm_offset=robots.ARM_OFFSET)
+_SITE_WORKSPACE = _ReachWorkspace(
+    target_bbox=workspaces.BoundingBox(lower=(0.35, 0.12, 0.08),
+                                       upper=(0.36, 0.15, 0.08)),
+    tcp_bbox=workspaces.BoundingBox(lower=(0.1, 0.1, 0.02),
+                                    upper=(0.1, 0.1, 0.02)),
+    arm_offset=robots.ARM_OFFSET)
 
 # Reach Single Goal Pose 2 - Left near
 # (x, z, y)
@@ -80,12 +80,12 @@ _DUPLO_WORKSPACE = _ReachWorkspace(
 
 # Reach Single Goal Pose 4 - Left 8oclock
 # (x, z, y)
-_SITE_WORKSPACE = _ReachWorkspace(
-    target_bbox=workspaces.BoundingBox(lower=(-0.25, 0.05, 0.08),
-                                       upper=(-0.25, 0.05, 0.08)),
-    tcp_bbox=workspaces.BoundingBox(lower=(0.1, 0.1, 0.02),
-                                    upper=(0.1, 0.1, 0.02)),
-    arm_offset=robots.ARM_OFFSET)
+# _SITE_WORKSPACE = _ReachWorkspace(
+#     target_bbox=workspaces.BoundingBox(lower=(-0.25, 0.05, 0.08),
+#                                        upper=(-0.25, 0.05, 0.08)),
+#     tcp_bbox=workspaces.BoundingBox(lower=(0.1, 0.1, 0.02),
+#                                     upper=(0.1, 0.1, 0.02)),
+#     arm_offset=robots.ARM_OFFSET)
 
 # Reach Multi Goal
 # _SITE_WORKSPACE = _ReachWorkspace(
